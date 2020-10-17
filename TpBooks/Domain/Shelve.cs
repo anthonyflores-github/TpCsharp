@@ -11,6 +11,8 @@ namespace TpBooks.Domain
 
         public string Title { get; set; }
 
+        public List<Bookdto> Books { get; set; }
+
         public Shelve(Guid id, string title)
         {
             Id = id;

@@ -15,10 +15,17 @@ namespace TpBooks.Controllers
     {
         [HttpGet]
         [Route("[controller]/{title}/{author}")]
-        public ActionResult<Bookdto> Get(string title, string author)
+        public ActionResult<Bookdto> GetBook(string title, string author)
         {
             BookService.LoadJson(BookService.ReadApiGoogle(title, author));
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("[controller]")]
+        public ActionResult<Bookdto> GetAllBook()
+        {
+            return Ok(BookService.GetBooks());
         }
     }
 }

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using TpBooks.Data;
 using TpBooks.Service;
+using static TpBooks.Service.BookService;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,23 +29,29 @@ namespace TpBooks.Controllers
         [HttpGet("{id}")]
         public ActionResult<Shelvesdto> GetShelves(string id)
         {
+            SQLiteDataReader ID = null;
+
             Guid idguid = Guid.Parse(id);
             var shelve = _shelveService.Getshelvess(idguid);
 
             if (shelve is null)
             {
-                return NotFound();
+                var a = GetBooks(idguid);
+                shelve = new Shelvesdto(a.Id, a.Title);
             }
 
-            return Ok(_shelveService.Getshelvess(idguid));
+            return shelve;
         }
 
-        // POST api/<ValuesController>
+        // POST
         [HttpPost("{id}")]
         public ActionResult<Shelvesdto> Post(string id)
         {
+            var db = new DataContext();
+
             Guid idguid = Guid.Parse(id);
-            Bookdto book = _bookService.GetPizzas(idguid);
+
+            Bookdto book = GetBooks(idguid);
 
             if (!book.Equals(null))
             {
@@ -52,36 +59,21 @@ namespace TpBooks.Controllers
                 Shelvesdto shelve = new Shelvesdto(book.Id, book.Title);
                 shelves.Add(shelve);
 
-                using (var db = new DataContext())
-                {
-                    // Create
-                    Console.WriteLine("Inserting a new book");
-                    db.Add(shelve);
-                    db.SaveChanges();
+                // Create
+                Console.WriteLine("Inserting a new book");
+                db.Add(shelve);
+                db.SaveChanges();
 
-                    // Read
-                    Console.WriteLine("Querying for a blog");
-                    var Book = db.Book
-                        .OrderBy(b => b.Id)
-                        .First();
-                }
+                // Read
+                Console.WriteLine("Querying for a blog");
+                var Book = db.Book
+                    .OrderBy(b => b.Id)
+                    .First();
 
                 return Ok(shelve);
             }
 
             return NotFound();
-        }
-
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

@@ -29,7 +29,7 @@ namespace TpBooks.Service
             return json;
         }
 
-        public List<Bookdto> GetBooks()
+        public static List<Bookdto> GetBooks()
         {
             return BookRepo.GetBooks()
                 .Select(p => new Bookdto(
@@ -38,7 +38,7 @@ namespace TpBooks.Service
                 .ToList();
         }
 
-        public Bookdto GetPizzas(Guid id)
+        public static Bookdto GetBooks(Guid id)
         {
             return ConvertDto(
                 BookRepo.GetBooks()
